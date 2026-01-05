@@ -186,7 +186,7 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
           podman push --digestfile .oci-digest "localhost/kernel-f${{ matrix.fedora_version}}" \
-            "docker://ghcr.io/${{ github.repository }}:${{ github.ref_name }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}"
+            "docker://ghcr.io/eldarock/kernel-bazzite-vrr-f${{ matrix.fedora_version }}-${{ matrix.arch }}"
           echo "digest=$(cat .oci-digest)" >> $GITHUB_OUTPUT
           
       - name: Login to GitHub Container Registry
