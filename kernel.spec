@@ -2079,6 +2079,7 @@ ApplyOptionalPatch patch-1-redhat.patch
 ApplyOptionalPatch patch-2-handheld.patch
 ApplyOptionalPatch patch-3-akmods.patch
 ApplyOptionalPatch patch-4-amdgpu-vrr-whitelist.patch
+ApplyOptionalPatch patch-5-amdgpu-hdmi-vrr.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
