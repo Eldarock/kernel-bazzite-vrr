@@ -1,4 +1,4 @@
-Bazzite Kernel
+Bazzite Kernel HDMI-VRR AMD patched
 ==============
 
 This repository contains the Bazzite kernel, built directly
