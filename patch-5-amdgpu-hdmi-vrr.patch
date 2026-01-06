@@ -126,8 +126,8 @@ index 26bb7710a462..104069319584 100644
  		    max_tmds_clock, str_yes_no(max_frl_rate), str_yes_no(dsc_support));
 +	drm_dbg_kms(connector->dev,
 +		"[CONNECTOR:%d:%s] ALLM support: %s, VRR support: %s, VRR min Hz: %u, VRR max Hz: %u\n",
-++		connector->base.id, connector->name, str_yes_no(hdmi->allm_supported),
-++		str_yes_no(hdmi->vrr_cap.supported), hdmi->vrr_cap.min_hz, hdmi->vrr_cap.max_hz);
++		connector->base.id, connector->name, str_yes_no(hdmi->allm_supported),
++		str_yes_no(hdmi->vrr_cap.supported), hdmi->vrr_cap.min_hz, hdmi->vrr_cap.max_hz);
  }
  
  static void drm_parse_hdmi_deep_color_info(struct drm_connector *connector,
