@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 740711ac1037..7335d6dc2e77 100644
+index 740711ac1037..5306e2ff070c 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -9579,7 +9579,7 @@ static void update_freesync_state_on_stream(
@@ -19,10 +19,12 @@ index 740711ac1037..7335d6dc2e77 100644
  	const struct edid *edid;
  	bool freesync_capable = false;
  	enum adaptive_sync_type as_type = ADAPTIVE_SYNC_TYPE_NONE;
-@@ -13241,8 +13242,20 @@ void amdgpu_dm_update_freesync_caps(struct drm_connector *connector,
+@@ -13240,9 +13241,21 @@ void amdgpu_dm_update_freesync_caps(struct drm_connector *connector,
+ 	if (amdgpu_dm_connector->dc_link)
  		as_type = dm_get_adaptive_sync_support_type(amdgpu_dm_connector->dc_link);
  
- 	if (as_type == FREESYNC_TYPE_PCON_IN_WHITELIST) {
+-	if (as_type == FREESYNC_TYPE_PCON_IN_WHITELIST) {
++	if (as_type == ADAPTIVE_SYNC_TYPE_PCON_IN_WHITELIST) {
 +		hdmi_vrr = &connector->display_info.hdmi.vrr_cap;
  		i = parse_hdmi_amd_vsdb(amdgpu_dm_connector, edid, &vsdb_info);
 -		if (i >= 0 && vsdb_info.freesync_supported && vsdb_info.amd_vsdb_version > 0) {
@@ -64,8 +66,27 @@ index e5e993d3ef74..d28cb957e23e 100644
  		break;
  	default:
  		break;
+diff --git a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
+index b3d55cac3569..429bc0ab86d6 100644
+--- a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
++++ b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
+@@ -535,12 +535,12 @@ void mod_build_adaptive_sync_infopacket(const struct dc_stream_state *stream,
+ 		if (stream != NULL)
+ 			mod_build_adaptive_sync_infopacket_v2(stream, param, info_packet);
+ 		break;
+-	case FREESYNC_TYPE_PCON_IN_WHITELIST:
++	case ADAPTIVE_SYNC_TYPE_PCON_IN_WHITELIST:
+ 	case ADAPTIVE_SYNC_TYPE_EDP:
+ 		mod_build_adaptive_sync_infopacket_v1(info_packet);
+ 		break;
+ 	case ADAPTIVE_SYNC_TYPE_NONE:
+-	case FREESYNC_TYPE_PCON_NOT_IN_WHITELIST:
++	case ADAPTIVE_SYNC_TYPE_PCON_NOT_IN_WHITELIST:
+ 	default:
+ 		break;
+ 	}
 diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index 26bb7710a462..ab4f6c9a4871 100644
+index 26bb7710a462..104069319584 100644
 --- a/drivers/gpu/drm/drm_edid.c
 +++ b/drivers/gpu/drm/drm_edid.c
 @@ -6152,6 +6152,19 @@ static void drm_parse_ycbcr420_deep_color_info(struct drm_connector *connector,
@@ -88,22 +109,25 @@ index 26bb7710a462..ab4f6c9a4871 100644
  static void drm_parse_dsc_info(struct drm_hdmi_dsc_cap *hdmi_dsc,
  			       const u8 *hf_scds)
  {
-@@ -6277,6 +6290,8 @@ static void drm_parse_hdmi_forum_scds(struct drm_connector *connector,
+@@ -6277,7 +6290,10 @@ static void drm_parse_hdmi_forum_scds(struct drm_connector *connector,
  	}
  
  	drm_parse_ycbcr420_deep_color_info(connector, hf_scds);
 +	if (cea_db_payload_len(hf_scds) >= 8 && hf_scds[8])
 +		hdmi->allm_supported = hf_scds[8] & DRM_EDID_ALLM;
  
++	drm_parse_vrr_info(connector, hf_scds);
  	if (cea_db_payload_len(hf_scds) >= 11 && hf_scds[11]) {
  		drm_parse_dsc_info(hdmi_dsc, hf_scds);
-@@ -6287,6 +6302,9 @@ static void drm_parse_hdmi_forum_scds(struct drm_connector *connector,
+ 		dsc_support = true;
+@@ -6287,6 +6303,10 @@ static void drm_parse_hdmi_forum_scds(struct drm_connector *connector,
  		    "[CONNECTOR:%d:%s] HF-VSDB: max TMDS clock: %d KHz, HDMI 2.1 support: %s, DSC 1.2 support: %s\n",
  		    connector->base.id, connector->name,
  		    max_tmds_clock, str_yes_no(max_frl_rate), str_yes_no(dsc_support));
 +	drm_dbg_kms(connector->dev,
-+		"[CONNECTOR:%d:%s] ALLM support: %s\n",
-+		connector->base.id, connector->name, str_yes_no(hdmi->allm_supported));
++		"[CONNECTOR:%d:%s] ALLM support: %s, VRR support: %s, VRR min Hz: %u, VRR max Hz: %u\n",
+++		connector->base.id, connector->name, str_yes_no(hdmi->allm_supported),
+++		str_yes_no(hdmi->vrr_cap.supported), hdmi->vrr_cap.min_hz, hdmi->vrr_cap.max_hz);
  }
  
  static void drm_parse_hdmi_deep_color_info(struct drm_connector *connector,
