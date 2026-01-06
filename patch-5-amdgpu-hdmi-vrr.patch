@@ -66,6 +66,21 @@ index e5e993d3ef74..d28cb957e23e 100644
  		break;
  	default:
  		break;
+diff --git a/drivers/gpu/drm/amd/display/modules/inc/mod_info_packet.h b/drivers/gpu/drm/amd/display/modules/inc/mod_info_packet.h
+index 66dc9a19aebe..91fe039c0c95 100644
+--- a/drivers/gpu/drm/amd/display/modules/inc/mod_info_packet.h
++++ b/drivers/gpu/drm/amd/display/modules/inc/mod_info_packet.h
+@@ -44,8 +44,8 @@ void mod_build_hf_vsif_infopacket(const struct dc_stream_state *stream,
+ enum adaptive_sync_type {
+ 	ADAPTIVE_SYNC_TYPE_NONE                  = 0,
+ 	ADAPTIVE_SYNC_TYPE_DP                    = 1,
+-	FREESYNC_TYPE_PCON_IN_WHITELIST          = 2,
+-	FREESYNC_TYPE_PCON_NOT_IN_WHITELIST      = 3,
++	ADAPTIVE_SYNC_TYPE_PCON_IN_WHITELIST     = 2,
++	ADAPTIVE_SYNC_TYPE_PCON_NOT_IN_WHITELIST = 3,
+ 	ADAPTIVE_SYNC_TYPE_EDP                   = 4,
+ };
+ 
 diff --git a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
 index b3d55cac3569..429bc0ab86d6 100644
 --- a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
@@ -86,7 +101,7 @@ index b3d55cac3569..429bc0ab86d6 100644
  		break;
  	}
 diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index 26bb7710a462..104069319584 100644
+index 26bb7710a462..686d0c1e2ccc 100644
 --- a/drivers/gpu/drm/drm_edid.c
 +++ b/drivers/gpu/drm/drm_edid.c
 @@ -6152,6 +6152,19 @@ static void drm_parse_ycbcr420_deep_color_info(struct drm_connector *connector,
